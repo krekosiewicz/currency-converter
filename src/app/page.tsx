@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios'
 import useLocale from './useLocale';
 import 'react-datepicker/dist/react-datepicker.css';
 import ReactDatePicker from 'react-datepicker'
@@ -45,7 +45,7 @@ const Home: React.FC = () => {
         if (axios.isCancel(error)) {
           console.log('Request canceled', error.message);
         } else {
-          console.log('Fetching failed', error.message);
+          console.log('Fetching failed', (error as AxiosError).message);
           setAlertMessage(labels.apiUnavailable);
         }
       } finally {
@@ -73,7 +73,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen p-8 pt-0 bg-terminal relative">
-      <div className="flex items-center justify-end w-full p-4 sticky top-0 bg-terminal">
+      <div className="flex items-center justify-end w-full p-4 sticky top-0 bg-terminal z-10">
         <h1 className="text-4xl font-bold text-fontOnTerminal text-center my-4 flex-1">{labels.title}</h1>
         <button
           onClick={toggleLocale}
@@ -107,7 +107,7 @@ const Home: React.FC = () => {
           <label htmlFor="date" className="block text-gray-700">{labels.date}</label>
           <ReactDatePicker
             selected={new Date(date)}
-            onChange={(date) => setDate(date.toISOString().split('T')[0])}
+            onChange={(date) => setDate((date as Date).toISOString().split('T')[0])}
             maxDate={new Date()}
             dateFormat="yyyy-MM-dd"
             className="w-full p-2 border border-gray-300 rounded mt-1"
