@@ -69,18 +69,20 @@ const Home: React.FC = () => {
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="min-h-screen p-8 bg-gray-100 relative">
-      <button
-        onClick={toggleLocale}
-        className="mb-4 bg-primary text-white p-2 rounded"
-        aria-label={locale === 'en' ? 'Switch to Polish' : 'Przełącz na Angielski'}
-      >
-        {locale === 'en' ? 'Switch to Polish' : 'Przełącz na Angielski'}
-      </button>
-      <h1 className="text-4xl font-bold text-center mb-8">{labels.title}</h1>
+    <div className="min-h-screen p-8 pt-0 bg-terminal relative">
+      <div className="flex items-center justify-end w-full p-4 sticky top-0 bg-terminal">
+        <h1 className="text-4xl font-bold text-fontOnTerminal text-center my-4 flex-1">{labels.title}</h1>
+        <button
+          onClick={toggleLocale}
+          className="bg-primary text-white p-2 rounded ml-2"
+          aria-label={locale === 'en' ? 'Switch to Polish' : 'Przełącz na Angielski'}
+        >
+          {locale === 'en' ? 'Polish' : 'Angielski'}
+        </button>
+      </div>
       {alertMessage && (
         <div
-          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 p-4 bg-yellow-200 text-yellow-800 rounded"
+          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 p-4 bg-warning text-terminal rounded"
           role="alert"
         >
           {alertMessage}
@@ -144,40 +146,40 @@ const Home: React.FC = () => {
         </div>
         <button
           onClick={handleConvert}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              handleConvert();
+            }
+          }}
           className="w-full bg-primary text-white p-2 rounded mt-4"
           aria-label={labels.convert}
+          tabIndex={0}  // Ensure the button is focusable
         >
           {labels.convert}
         </button>
         {convertedAmount !== null && (
           <div className="mt-4">
-            <h2 className="text-2xl font-bold">
+            <h2 className="text-2xl font-bold ">
               {labels.convertedAmount}: {convertedAmount.toFixed(2)} {toCurrency}
             </h2>
           </div>
         )}
       </div>
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold text-center mb-4">{labels.exchangeRatesOn} {date}</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white" aria-label="Exchange Rates">
-            <thead>
-            <tr>
-              <th className="px-4 py-2 border">Currency</th>
-              <th className="px-4 py-2 border">Code</th>
-              <th className="px-4 py-2 border">Rate</th>
-            </tr>
-            </thead>
-            <tbody>
-            {exchangeRates.map((rate) => (
-              <tr key={rate.code}>
-                <td className="px-4 py-2 border">{rate.currency}</td>
-                <td className="px-4 py-2 border">{rate.code}</td>
-                <td className="px-4 py-2 border">{rate.mid}</td>
-              </tr>
-            ))}
-            </tbody>
-          </table>
+      <div className="mt-8 max-w-lg mx-auto">
+        <h2 className="text-2xl font-bold text-fontOnTerminal text-center mb-4">
+          {labels.exchangeRatesOn} <span className="whitespace-nowrap">{date}</span>
+        </h2>
+        <div className="grid grid-cols-fr-min-min bg-white p-6 rounded-lg shadow-lg w-full">
+          <div className="font-bold p-2 bg-terminal text-fontOnTerminal rounded-tl-lg">{labels.currency}</div>
+          <div className="font-bold p-2 bg-terminal text-fontOnTerminal">{labels.code}</div>
+          <div className="font-bold p-2 bg-terminal text-fontOnTerminal rounded-tr-lg">{labels.rate}</div>
+          {exchangeRates.map((rate, index) => (
+            <React.Fragment key={rate.code}>
+              <div className={`p-2 py-4 break-words ${index % 2 ? 'bg-gray-100' : 'bg-white'}`}>{rate.currency}</div>
+              <div className={`p-2 py-4 ${index % 2 ? 'bg-gray-100' : 'bg-white'}`}>{rate.code}</div>
+              <div className={`p-2 py-4 break-all-380  ${index % 2 ? 'bg-gray-100' : 'bg-white'}`}>{rate.mid}</div>
+            </React.Fragment>
+          ))}
         </div>
       </div>
     </div>

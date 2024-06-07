@@ -12,8 +12,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: '#FFB52E',
+        terminal: '#0A1E24',
+        fontOnTerminal: '#ECEFC1',
+        primary: '#67A0CD',
+        warning: '#FF8A39',
       },
+      gridTemplateColumns: {
+        'fr-min-min': 'minmax(80px, 1fr) min-content min-content',
+      },
+      screens: {
+        'xs': '380px',  // Custom breakpoint at 380px
+      }
     },
   },
   plugins: [],

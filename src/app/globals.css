@@ -1,7 +1,7 @@
+/* styles/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 
 html * {
   box-sizing: border-box;
@@ -11,6 +11,10 @@ html * {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --terminal-background: #0A1E24;
+  --font-color-on-terminal-background: #ECEFC1;
+  --use-this-color-somewhere-only-if-its-accessible: #67A0CD;
+  --primary-button-color: #FF8A39;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,11 +28,11 @@ html * {
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+          to bottom,
+          transparent,
+          rgb(var(--background-end-rgb))
+  )
+  rgb(var(--background-start-rgb));
 }
 
 @layer utilities {
@@ -42,13 +46,18 @@ body {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  background: url('data:image/svg+xml;utf8,<svg fill="%23667" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 6px center/24px 24px;
+  background: url('data:image/svg+xml;utf8,<svg fill="%67A0CD" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 6px center/24px 24px;
   padding-right: 40px;
 }
 
 /* Add custom styles for the select element */
 .custom-select:focus {
   outline: none;
-  border-color: #FFB52E;
-  box-shadow: 0 0 0 3px rgba(255, 181, 46, 0.6);
+  border-color: #67A0CD;
+  box-shadow: 0 0 0 3px rgba(103, 160, 205, 0.6);
+}
+@media (max-width: 381px) {
+  .break-all-380 {
+    word-break: break-all;
+  }
 }
