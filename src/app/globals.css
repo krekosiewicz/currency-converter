@@ -61,3 +61,7 @@ body {
     word-break: break-all;
   }
 }
+
+.react-datepicker-wrapper {
+  width: 100%;
+}

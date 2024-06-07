@@ -2,12 +2,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import useLocale from './useLocale';
+import 'react-datepicker/dist/react-datepicker.css';
+import ReactDatePicker from 'react-datepicker'
 
 interface ExchangeRate {
   currency: string;
   code: string;
   mid: number;
 }
+
+const getYesterdayDate = () => {
+  const today = new Date();
+  today.setDate(today.getDate() - 1);
+  return today.toISOString().split('T')[0];
+};
+
 
 const Home: React.FC = () => {
   const { locale, toggleLocale, labels } = useLocale();
@@ -16,43 +25,39 @@ const Home: React.FC = () => {
   const [fromCurrency, setFromCurrency] = useState<string>('USD');
   const [toCurrency, setToCurrency] = useState<string>('EUR');
   const [convertedAmount, setConvertedAmount] = useState<number | null>(null);
-  const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState<string>(getYesterdayDate());
   const [alertMessage, setAlertMessage] = useState<string>('');
-
-  const fetchExchangeRates = async (selectedDate: string, retry: boolean = false) => {
-    try {
-      const response = await axios.get(`https://api.nbp.pl/api/exchangerates/tables/A/${selectedDate}/`);
-      const rates = response.data[0].rates;
-      rates.push({ currency: locale === 'en' ? 'Polish Zloty' : 'Polski Złoty', code: 'PLN', mid: 1 }); // Add PLN manually
-      setExchangeRates(rates);
-      setAlertMessage('');
-    } catch (error) {
-      if (!retry) {
-        setAlertMessage(labels.todayUnavailable);
-        setTimeout(() => {
-          const previousDate = new Date(selectedDate);
-          previousDate.setDate(previousDate.getDate() - 1);
-          setDate(previousDate.toISOString().split('T')[0]);
-          fetchExchangeRates(previousDate.toISOString().split('T')[0], true);
-        }, 3000);
-      } else {
-        setAlertMessage(labels.apiUnavailable);
-      }
-    }
-  };
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (alertMessage) {
-      const timer = setTimeout(() => {
+    const source = axios.CancelToken.source();
+    const fetchExchangeRates = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`https://api.nbp.pl/api/exchangerates/tables/A/${date}/`, {
+          cancelToken: source.token
+        });
+        const rates: ExchangeRate[] = response.data[0].rates;
+        rates.push({ currency: locale === 'en' ? 'Polish Zloty' : 'Polski Złoty', code: 'PLN', mid: 1 });
+        setExchangeRates(rates);
         setAlertMessage('');
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [alertMessage]);
+      } catch (error) {
+        if (axios.isCancel(error)) {
+          console.log('Request canceled', error.message);
+        } else {
+          console.log('Fetching failed', error.message);
+          setAlertMessage(labels.apiUnavailable);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  useEffect(() => {
-    fetchExchangeRates(date);
-  }, [date, locale]);
+    fetchExchangeRates();
+    return () => {
+      source.cancel('Component unmounted, request canceled');
+    };
+  }, [date, locale]);  // Dependency array to re-run effect when date or locale changes
 
   const handleConvert = () => {
     if (!amount) {
@@ -65,8 +70,6 @@ const Home: React.FC = () => {
       setConvertedAmount((parseFloat(amount) * fromRate) / toRate);
     }
   };
-
-  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div className="min-h-screen p-8 pt-0 bg-terminal relative">
@@ -102,14 +105,12 @@ const Home: React.FC = () => {
         </div>
         <div className="mb-4">
           <label htmlFor="date" className="block text-gray-700">{labels.date}</label>
-          <input
-            id="date"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            max={today}
+          <ReactDatePicker
+            selected={new Date(date)}
+            onChange={(date) => setDate(date.toISOString().split('T')[0])}
+            maxDate={new Date()}
+            dateFormat="yyyy-MM-dd"
             className="w-full p-2 border border-gray-300 rounded mt-1"
-            aria-required="true"
           />
         </div>
         <div className="mb-4">
@@ -148,7 +149,7 @@ const Home: React.FC = () => {
           onClick={handleConvert}
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
-              handleConvert();
+              handleConvert()
             }
           }}
           className="w-full bg-primary text-white p-2 rounded mt-4"
