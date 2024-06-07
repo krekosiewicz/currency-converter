@@ -36,3 +36,19 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Hide the default arrow */
+.custom-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url('data:image/svg+xml;utf8,<svg fill="%23667" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 6px center/24px 24px;
+  padding-right: 40px;
+}
+
+/* Add custom styles for the select element */
+.custom-select:focus {
+  outline: none;
+  border-color: #FFB52E;
+  box-shadow: 0 0 0 3px rgba(255, 181, 46, 0.6);
+}

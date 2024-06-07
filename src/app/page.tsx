@@ -72,7 +72,7 @@ const Home: React.FC = () => {
     <div className="min-h-screen p-8 bg-gray-100 relative">
       <button
         onClick={toggleLocale}
-        className="mb-4 bg-blue-500 text-white p-2 rounded"
+        className="mb-4 bg-primary text-white p-2 rounded"
         aria-label={locale === 'en' ? 'Switch to Polish' : 'Przełącz na Angielski'}
       >
         {locale === 'en' ? 'Switch to Polish' : 'Przełącz na Angielski'}
@@ -116,7 +116,7 @@ const Home: React.FC = () => {
             id="fromCurrency"
             value={fromCurrency}
             onChange={(e) => setFromCurrency(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded mt-1"
+            className="w-full p-2 border border-gray-300 rounded mt-1 custom-select"
             aria-required="true"
           >
             {exchangeRates.map((rate) => (
@@ -132,7 +132,7 @@ const Home: React.FC = () => {
             id="toCurrency"
             value={toCurrency}
             onChange={(e) => setToCurrency(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded mt-1"
+            className="w-full p-2 border border-gray-300 rounded mt-1 custom-select"
             aria-required="true"
           >
             {exchangeRates.map((rate) => (
@@ -144,7 +144,7 @@ const Home: React.FC = () => {
         </div>
         <button
           onClick={handleConvert}
-          className="w-full bg-blue-500 text-white p-2 rounded mt-4"
+          className="w-full bg-primary text-white p-2 rounded mt-4"
           aria-label={labels.convert}
         >
           {labels.convert}
