@@ -74,7 +74,7 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen p-8 pt-0 bg-terminal relative">
       <div className="flex items-center justify-end w-full p-4 sticky top-0 bg-terminal z-10">
-        <h1 className="text-4xl font-bold text-fontOnTerminal text-center my-4 flex-1">{labels.title}</h1>
+        <h1 className="text-2xl sm:text-4xl font-bold text-fontOnTerminal text-center md:my-2 flex-1">{labels.title}</h1>
         <button
           onClick={toggleLocale}
           className="bg-primary text-terminal p-2 rounded ml-2"
