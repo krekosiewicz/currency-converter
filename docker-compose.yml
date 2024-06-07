@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+
+  nginx:
+    build:
+      context: ./host/prod
+      args:
+        - DOMAIN_NAME=${DOMAIN_NAME}
+    ports:
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
+    volumes:
+      - ./data/certbot/www:/var/www/certbot
+      - ./data/certbot/conf:/etc/letsencrypt
+    depends_on:
+      - web
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; if [ ! -e /etc/letsencrypt/live/${DOMAIN_NAME} ]; then certbot certonly --webroot --webroot-path=/var/www/certbot --email ${REGISTER_EMAIL} --agree-tos --no-eff-email --domain ${DOMAIN_NAME} --domain www.${DOMAIN_NAME} -v; else echo \"Certificate already exists.\"; fi; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    depends_on:
+      - nginx
