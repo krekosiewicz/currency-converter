@@ -2,6 +2,9 @@
 
 This project is a currency converter application built with React(Nextjs). It provides an interface for users to convert amounts between different currencies based on exchange rates fetched from an NPB API.
 
+## Live demo
+https://rekosiewi.cz:3333
+
 ## Features
 
 - Convert currencies based on real-time exchange rates.
