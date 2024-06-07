@@ -4,6 +4,8 @@ import axios, { AxiosError } from 'axios'
 import useLocale from './useLocale';
 import 'react-datepicker/dist/react-datepicker.css';
 import ReactDatePicker from 'react-datepicker'
+import useAlert from '@/app/useAlert'
+import AlertComponent from '@/app/alertComponent'
 
 interface ExchangeRate {
   currency: string;
@@ -20,13 +22,13 @@ const getYesterdayDate = () => {
 
 const Home: React.FC = () => {
   const { locale, toggleLocale, labels } = useLocale();
+  const { alertMessage, triggerAlert, clearAlert } = useAlert();
   const [exchangeRates, setExchangeRates] = useState<ExchangeRate[]>([]);
   const [amount, setAmount] = useState<string>('');
   const [fromCurrency, setFromCurrency] = useState<string>('USD');
   const [toCurrency, setToCurrency] = useState<string>('EUR');
   const [convertedAmount, setConvertedAmount] = useState<number | null>(null);
   const [date, setDate] = useState<string>(getYesterdayDate());
-  const [alertMessage, setAlertMessage] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -40,13 +42,11 @@ const Home: React.FC = () => {
         const rates: ExchangeRate[] = response.data[0].rates;
         rates.push({ currency: locale === 'en' ? 'Polish Zloty' : 'Polski Złoty', code: 'PLN', mid: 1 });
         setExchangeRates(rates);
-        setAlertMessage('');
+        clearAlert();  // Using custom hook to manage alerts
       } catch (error) {
-        if (axios.isCancel(error)) {
-          console.log('Request canceled', error.message);
-        } else {
-          console.log('Fetching failed', (error as AxiosError).message);
-          setAlertMessage(labels.apiUnavailable);
+        const axiosError = error as AxiosError;
+        if (!axios.isCancel(axiosError)) {
+          triggerAlert(labels.apiUnavailable);  // Using custom hook to manage alerts
         }
       } finally {
         setLoading(false);
@@ -54,20 +54,20 @@ const Home: React.FC = () => {
     };
 
     fetchExchangeRates();
-    return () => {
-      source.cancel('Component unmounted, request canceled');
-    };
-  }, [date, locale]);  // Dependency array to re-run effect when date or locale changes
+    return () => source.cancel('Component unmounted, request canceled');
+  }, [date, locale]);  // Correct dependencies
 
   const handleConvert = () => {
     if (!amount) {
-      setAlertMessage(labels.emptyAmount);
+      triggerAlert(labels.emptyAmount);  // Using custom hook to manage alerts
       return;
     }
     const fromRate = exchangeRates.find(rate => rate.code === fromCurrency)?.mid;
     const toRate = exchangeRates.find(rate => rate.code === toCurrency)?.mid;
     if (fromRate && toRate) {
       setConvertedAmount((parseFloat(amount) * fromRate) / toRate);
+    } else {
+      triggerAlert('Conversion rates not found.');  // Inform the user if rates are not found
     }
   };
 
@@ -83,20 +83,14 @@ const Home: React.FC = () => {
           {locale === 'en' ? 'Polish' : 'Angielski'}
         </button>
       </div>
-      {alertMessage && (
-        <div
-          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 p-4 bg-warning text-terminal rounded"
-          role="alert"
-        >
-          {alertMessage}
-        </div>
-      )}
+      <AlertComponent message={alertMessage} clearAlert={clearAlert} />
       <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
         <div className="mb-4">
           <label htmlFor="amount" className="block text-gray-700">{labels.amount}</label>
           <input
             id="amount"
             type="number"
+            step="0.01"  // Allow decimal values to two decimal places
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded mt-1"
