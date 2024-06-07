@@ -70,41 +70,54 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen p-8 bg-gray-100 relative">
-      <button onClick={toggleLocale} className="mb-4 bg-blue-500 text-white p-2 rounded">
+      <button
+        onClick={toggleLocale}
+        className="mb-4 bg-blue-500 text-white p-2 rounded"
+        aria-label={locale === 'en' ? 'Switch to Polish' : 'Przełącz na Angielski'}
+      >
         {locale === 'en' ? 'Switch to Polish' : 'Przełącz na Angielski'}
       </button>
-      <h2 className="text-2xl font-bold text-center mb-8">{labels.title}</h2>
+      <h1 className="text-4xl font-bold text-center mb-8">{labels.title}</h1>
       {alertMessage && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 p-4 bg-yellow-200 text-yellow-800 rounded">
+        <div
+          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 p-4 bg-yellow-200 text-yellow-800 rounded"
+          role="alert"
+        >
           {alertMessage}
         </div>
       )}
       <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
         <div className="mb-4">
-          <label className="block text-gray-700">{labels.amount}</label>
+          <label htmlFor="amount" className="block text-gray-700">{labels.amount}</label>
           <input
+            id="amount"
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded mt-1"
+            aria-required="true"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">{labels.date}</label>
+          <label htmlFor="date" className="block text-gray-700">{labels.date}</label>
           <input
+            id="date"
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
             max={today}
             className="w-full p-2 border border-gray-300 rounded mt-1"
+            aria-required="true"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">{labels.fromCurrency}</label>
+          <label htmlFor="fromCurrency" className="block text-gray-700">{labels.fromCurrency}</label>
           <select
+            id="fromCurrency"
             value={fromCurrency}
             onChange={(e) => setFromCurrency(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded mt-1"
+            aria-required="true"
           >
             {exchangeRates.map((rate) => (
               <option key={rate.code} value={rate.code}>
@@ -114,11 +127,13 @@ const Home: React.FC = () => {
           </select>
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">{labels.toCurrency}</label>
+          <label htmlFor="toCurrency" className="block text-gray-700">{labels.toCurrency}</label>
           <select
+            id="toCurrency"
             value={toCurrency}
             onChange={(e) => setToCurrency(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded mt-1"
+            aria-required="true"
           >
             {exchangeRates.map((rate) => (
               <option key={rate.code} value={rate.code}>
@@ -130,6 +145,7 @@ const Home: React.FC = () => {
         <button
           onClick={handleConvert}
           className="w-full bg-blue-500 text-white p-2 rounded mt-4"
+          aria-label={labels.convert}
         >
           {labels.convert}
         </button>
@@ -144,7 +160,7 @@ const Home: React.FC = () => {
       <div className="mt-8">
         <h2 className="text-2xl font-bold text-center mb-4">{labels.exchangeRatesOn} {date}</h2>
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white">
+          <table className="min-w-full bg-white" aria-label="Exchange Rates">
             <thead>
             <tr>
               <th className="px-4 py-2 border">Currency</th>
