@@ -77,7 +77,7 @@ const Home: React.FC = () => {
         <h1 className="text-4xl font-bold text-fontOnTerminal text-center my-4 flex-1">{labels.title}</h1>
         <button
           onClick={toggleLocale}
-          className="bg-primary text-white p-2 rounded ml-2"
+          className="bg-primary text-terminal p-2 rounded ml-2"
           aria-label={locale === 'en' ? 'Switch to Polish' : 'Przełącz na Angielski'}
         >
           {locale === 'en' ? 'Polish' : 'Angielski'}
@@ -104,12 +104,14 @@ const Home: React.FC = () => {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="date" className="block text-gray-700">{labels.date}</label>
+          <label htmlFor="datePicker" className="block text-gray-700">{labels.date}</label>
           <ReactDatePicker
+            id="datePicker"
             selected={new Date(date)}
             onChange={(date) => setDate((date as Date).toISOString().split('T')[0])}
             maxDate={new Date()}
             dateFormat="yyyy-MM-dd"
+            aria-label="Select a date"
             className="w-full p-2 border border-gray-300 rounded mt-1"
           />
         </div>
@@ -152,7 +154,7 @@ const Home: React.FC = () => {
               handleConvert()
             }
           }}
-          className="w-full bg-primary text-white p-2 rounded mt-4"
+          className="w-full bg-primary text-terminal p-2 rounded mt-4"
           aria-label={labels.convert}
           tabIndex={0}  // Ensure the button is focusable
         >
